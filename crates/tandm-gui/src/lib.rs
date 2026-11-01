@@ -621,6 +621,7 @@ impl TandmView {
             .children(self.columns.iter().enumerate().map(|(i, c)| {
                 let (sub, color) = match &c.status {
                     ColStatus::Loading => ("loading…".to_string(), p.muted),
+                    ColStatus::Unreachable(e) if e.starts_with("unreachable") => (e.clone(), p.bad),
                     ColStatus::Unreachable(e) => (format!("unreachable: {e}"), p.bad),
                     ColStatus::Ok(ms) => {
                         if ms.service.active {

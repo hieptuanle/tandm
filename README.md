@@ -3,6 +3,8 @@
 Keeps git-synced repos in step across your machines, and shows their sync state in one grid:
 **machines as columns, repos as rows**.
 
+![tandm's grid: three machines as columns, six repos as rows. Cells show in sync, ahead 1, behind 2, paused, not added, unreachable, and two skips: uncommitted changes overlapping upstream, and a push blocked by a secret-looking line](docs/grid.png)
+
 Each machine runs a small headless engine every 2 minutes (systemd user timer on Linux, launchd
 agent on macOS). The engine pulls new commits from `origin/main` and pushes commits that people
 made locally. It's built for worktrees that several people or AI agent sessions edit at once, so
@@ -91,6 +93,28 @@ tandm --on laptop-b add '~/projects/x'   # quote ~ so it expands on the peer, no
 
 The interval and a repo's branch/remote have no command: edit `config.toml` (after changing
 `interval_secs`, re-run `tandm service install`).
+
+The same state from a terminal (the demo in the screenshot above):
+
+```
+$ tandm status --all
+laptop-a (this machine) — linux · tandm 0.1.0 · service active
+  notes     in sync         b1daa48 = origin/main  last run 1m ago: in sync
+  website   in sync         f7e7639 = origin/main  last run 1m ago: pushed 2 commit(s) -> f7e7639
+  infra     skipped: 1 file(s) overlap upstream  fe8e1e0 ≠ origin/main  dirty 1  last run 1m ago: skip pull: uncommitted changes overlap upstream: main.tf
+  api       skipped: push blocked: secret-looking lines  8a63fd5 ≠ origin/main  last run 1m ago: NOT pushing 1 commit(s): secret-looking lines: .env.example:1 (credential assignment) in 8a63fd58
+  dotfiles  ahead 1         4c4499e ≠ origin/main  last run 1m ago: in sync
+  thesis    in sync         b3ece49 = origin/main  last run 1m ago: in sync
+
+laptop-b — macos · tandm 0.1.0 · service active
+  notes     in sync         b1daa48 = origin/main  last run 1m ago: in sync
+  website   behind 2        278544a ≠ origin/main  dirty 1  last run 1m ago: in sync
+  infra     in sync         ae8c34d = origin/main  last run 1m ago: pulled 1 commit(s) -> ae8c34d
+  api       in sync         8130ad9 = origin/main  last run 1m ago: in sync
+  dotfiles  paused          05a3fbe = origin/main  last run 1m ago: in sync
+
+laptop-c: unreachable — unreachable over ssh (laptop-c): ssh: Could not resolve hostname laptop-c: Name or service not known
+```
 
 `tandm sync` exits non-zero in the cases the old script did: an error, a rebase conflict, or a push
 blocked by the secret check.
