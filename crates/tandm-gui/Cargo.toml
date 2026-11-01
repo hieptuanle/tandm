@@ -1,0 +1,18 @@
+[package]
+name = "tandm-gui"
+description = "tandm GPUI window: machines x repos sync grid"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+tandm-core.workspace = true
+anyhow.workspace = true
+gpui.workspace = true
+serde_json.workspace = true
+
+# Xcode 26 ships the Metal shader compiler as a separate download; compiling gpui's shaders at
+# runtime means a plain Xcode install is enough to build.
+[target.'cfg(target_os = "macos")'.dependencies]
+gpui = { workspace = true, features = ["runtime_shaders"] }

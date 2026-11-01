@@ -1,0 +1,18 @@
+[package]
+name = "tandm"
+description = "Keep git-synced repos in step across machines; CLI + GPUI grid"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+default = ["gui"]
+gui = ["dep:tandm-gui"]
+
+[dependencies]
+tandm-core.workspace = true
+tandm-gui = { workspace = true, optional = true }
+anyhow.workspace = true
+clap.workspace = true
+serde_json.workspace = true
